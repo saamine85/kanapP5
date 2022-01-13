@@ -7,7 +7,9 @@ function displayProducts() {
       mainSection.setAttribute("class", "items");
       mainSection.setAttribute("id", "items");
       dataProducts.forEach((products) => {
-        mainSection.innerHTML += `
+        mainSection.innerHTML +=
+          // afin d'afficher le produit dans l'url faut rendre l'id variable
+          `
               <a href="./product.html?id=${products._id}">
               <article>
               <img src="${products.imageUrl}" alt="${products.altTxt}">
@@ -24,9 +26,6 @@ function displayProducts() {
     });
 }
 displayProducts();
-
-
-
 
 // fetch("http://localhost:3000/api/products")
 //   .then((data) => data.json())
