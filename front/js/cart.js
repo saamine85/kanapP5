@@ -1,62 +1,116 @@
-/***********************deuxieme methode avec le fetch then *************** */
-
-// const produit = window.location.search.slice(4);
-// console.log(produit);
-// // recuperer les donnees **************************
-// function getProducts() {
-//   fetch(`http://localhost:3000/api/products/${produit}`)
-//     .then((dataprod) =>
-//       // console.log(data)
-//       // afficher la réponse **************************
-//       // transformer notre reponse en json
-//       // console.log(dataprod.json()) ça nous rend une promise pour lafficher il faut un 2eme then
-//       dataprod.json()
-//     )
-//     .then((data) => {
-//       // console.table(data)
-//       // apres recuperation des donnee mnt creation le dom*******
-//       let myImage = document.querySelector("article .item__img");
-//       myImage.innerHTML = `
-//               <img src="${data.imageUrl}" alt="${data.altTxt}">
-//     `;
-//       let myTitle = document.querySelector("#title");
-//       myTitle.textContent = data.name;
-//       let myPrice = document.querySelector("#price");
-//       myPrice.textContent = data.price;
-//       let myDescription = document.querySelector("#description");
-//       myDescription.textContent = data.description;
-
-//       // recuperation des options avec couleur*********
-//       let myColor = document.querySelector("select");
-//       data.colors.forEach((color) => {
-//         let myOption = document.createElement("option");
-//         myOption.textContent = color;
-//         myOption.setAttribute("value", `${color}`);
-//         // myOption.value = color;
-//         // console.log(myOption);
-//         myColor.append(myOption);
-//       });
-//       console.log(myColor);
-//       // console.log(data.colors);
-//     });
-// }
-// getProducts();
-
-//       // myColor.innerHTML = `${data.map(
-//       //   (colors) => `<option>${data.colors}</option>`
-//       // )}`;
-
-/***********************End deuxieme methode avec le fetch then *************** */
-
+//****************************get panier from localStorage*********************/
 let prodStores = JSON.parse(localStorage.getItem("produit"));
-// console.log(prodStores);
+// console.log(prodStores)
 
-//*************************************affichage des produit local storage  */
+//****************************select position of stores*********************/
 
-const addPanier = document.querySelector("#cart__items");
-// console.log(addPanier);
+let addPanier = document.querySelector("#cart__items");
 
-//***************************************begin calcul Total en test ************** */
+//**************************** if panier !==null *********************/
+
+let produitData = [];
+if (prodStores) {
+  // console.log("add your code");
+  for (let i = 0; i < prodStores.length; i++) {
+    const prodStore = prodStores[i];
+    /**************************** fetch Api **************************/
+    fetch(`http://localhost:3000/api/products/${prodStore.productId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        produitData = data;
+        displayStore(produitData, prodStore.color, prodStore.quantity);
+        updateTotal();
+        removeProd();
+        updateQuantity();
+      });
+  }
+
+  //****************************else  panier ==null*********************/
+} else {
+  // console.log("add your prod");
+  const emptyData = `
+  <section class="cart"><h1>vide <a href="index.html">(ajoutez des produits)</a></h1></section>
+  `;
+  addPanier.innerHTML = emptyData;
+  let link = document.querySelector(".cart a");
+  link.style.textDecoration = "none";
+  link.style.color = "#ddd";
+  document.querySelector(".cart__order").style.display = "none";
+}
+
+//****************************inject panier DOM*********************/
+
+const displayStore = (produitData, color, quantity) => {
+  addPanier.innerHTML += `
+  <article
+  class="cart__item"
+  data-id="${produitData._id}"
+  data-color="${color}"
+  >
+  <div class="cart__item__img">
+  <img
+  src="${produitData.imageUrl}"
+  alt="${produitData.altTxt}"
+  />
+  </div>
+  <div class="cart__item__content">
+  <div class="cart__item__content__description">
+  <h2>${produitData.name}</h2>
+  <p>${color}</p>
+  <p id="price">${produitData.price} €</p>
+  </div>
+  <div class="cart__item__content__settings">
+  <div class="cart__item__content__settings__quantity">
+  <p>Qté :</p>
+  <input
+  type="number"
+  class="itemQuantity"
+  name="itemQuantity"
+  min="1"
+  max="100"
+  value="${quantity}"
+  />
+  </div>
+  <div class="cart__item__content__settings__delete">
+  <p class="deleteItem">Supprimer</p>
+  </div>
+  </div>
+  </div>
+  </article>
+  `;
+};
+
+//**************************** button delete *********************/
+
+const removeProd = () => {
+  let removeButton = document.getElementsByClassName("deleteItem");
+  // console.log(removeButton);
+  for (let i = 0; i < removeButton.length; i++) {
+    let deleteItem = removeButton[i];
+    deleteItem.addEventListener("click", (event) => {
+      let itemClicked = event.target;
+      let items = itemClicked.closest("article");
+      // itemClicked.parentElement.parentElement.parentElement.parentElement.remove();
+      let itemId = items.dataset.id;
+      let itemColor = items.dataset.color;
+      itemClicked.closest("article").remove();
+      console.log(itemColor);
+      console.log(itemId);
+      prodStores = prodStores.filter(
+        (el) => el.productId !== itemId || el.color !== itemColor
+      );
+
+      localStorage.setItem("produit", JSON.stringify(prodStores));
+      if (prodStores.length === 0) {
+        localStorage.removeItem("produit");
+        location.reload();
+      }
+      updateTotal();
+    });
+  }
+};
+
+//**************************** total price and total quantity *********************/
 
 const updateTotal = () => {
   const allProducts = document.querySelectorAll("article");
@@ -64,128 +118,118 @@ const updateTotal = () => {
   let totaleP = 0;
   let total = 0;
   // let totalQuantity = 0;
-  allProducts.forEach((item) => {
-    //recuperation des prix
-    // rendre le prix en number
+  allProducts.forEach((allProd) => {
+    //***************************recuperation des prix
+    //** rendre le prix en number
     let price = Number(
-      item.querySelector("p#price").innerText.replace("€", "")
+      allProd.querySelector("p#price").innerText.replace("€", "")
     );
+    //******** HTMLCollection utilise l'index
     let quantity = parseInt(
-      item.getElementsByClassName("itemQuantity")[0].value
+      allProd.getElementsByClassName("itemQuantity")[0].value
     );
-
-    total += quantity; // total =lancien total + (prix *quanite)
-    totaleP += price * quantity; // total =lancien total + (prix *quanite)
+    total += quantity; // total =lancien total + (quantite nouvelle)
+    totaleP += price * quantity; // totalp =lancien totalp + (prix *quanite)
     // console.log(typeof quantity);
+    removeProd();
   });
-  // afficher le prix total apres avoir teminer la boucle
   totalPrice.textContent = totaleP;
   totalQuantity.textContent = total;
-  // totalQuantity.textContent=total;
-  // totalQuantity.textContent = quantity1;
-  // console.log(total);
 };
 
-//*************************************** End calcul Total en test ************** */
+//**************************** change quantity input *********************/
 
-//*************************************** start panier ajout ************** */
+const updateQuantity = () => {
+  let prodQuantity = document.querySelectorAll(".itemQuantity");
 
-if (prodStores === null) {
-  // ***** si le panier est vide
-  const emptyData = `
- <section class="cart"><h1>votre panier est vide</h1></section>
- `;
-  addPanier.innerHTML = emptyData;
-} else {
-  // si le panier nest pas vide affiche les produit
-  prodStores.forEach((prodStore) => {
-    addPanier.innerHTML += `
-   <article
-                class="cart__item"
-                data-id="{product-ID}"
-                data-color="{product-color}"
-              >
-                <div class="cart__item__img">
-                <img
-                    src="${prodStore.image}"
-                    alt="${prodStore.alt}"
-                  />
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>${prodStore.nomProduit}</h2>
-                    <p>${prodStore.color}</p>
-                    <p id="price">${prodStore.price} €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté :</p>
-                      <input
-                        type="number"
-                        class="itemQuantity"
-                        name="itemQuantity"
-                        min="1"
-                        max="100"
-                        value="${prodStore.quantity}"
-                      />
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-                </article>
-                `;
-    // updateProd();
-    updateTotal();
+  //****************************** Target products in stores with there id and color
+
+  prodQuantity.forEach((prod) => {
+    let prodQnt = prod.closest("article");
+    console.log(prodQnt);
+    let prodQtyId = prodQnt.dataset.id;
+    console.log(prodQtyId);
+    let prodQtyColor = prodQnt.dataset.color;
+    console.log(prodQtyColor);
+    let newQuantity = parseFloat(prod.value);
+    console.log(newQuantity);
+    prod.addEventListener("change", () => {
+      // console.log(prod.value);
+      let myQuantity = parseFloat(prod.value);
+      console.log(myQuantity);
+
+      //****************************** check element if they have same color and id in sotres
+
+      prodStores.forEach((prodStore) => {
+        if (
+          prodStore.productId == prodQtyId &&
+          prodStore.color == prodQtyColor
+        ) {
+          prodStore.quantity = myQuantity;
+        }
+      });
+      localStorage.setItem("produit", JSON.stringify(prodStores));
+      updateTotal();
+    });
   });
-}
+};
 
-//*************************************** End panier ajout ************** */
+//''''''''''''''''''''''''''''''''''''''''''Start Form''''''''''''''''''''''''''''''''''//
 
-// const allQuantity = document.querySelectorAll("article");
-// for (let i = 0; i < allQuantity.length; i++) {
-//   allQuantity[i];
-//   updateProd();
-// }
-// function updateProd() {
-//   let productNumbers = localStorage.getItem("updateProd");
-//   productNumbers = parseInt(productNumbers);
-//   // console.log(productNumbers);
-//   if (productNumbers) {
-//     localStorage.setItem("updateProd", productNumbers + 1);
-//   }else{
-//      localStorage.setItem("updateProd",1);
-//   }
-// }
+const firstName = document.getElementById("firstName");
+firstName.addEventListener("change", (event) => {
+  firstName.classList.add("error");
+  firstNameErrorMsg.style.display = "block";
+  const regFirstName = /[a-z]/;
+  if (firstName.value.length >= 3 && regFirstName.test(firstName.value)) {
+    firstName.classList.replace("error", "succes");
+    firstNameErrorMsg.style.display = "none";
+  }
+});
+const lastName = document.getElementById("lastName");
+lastName.addEventListener("change", (event) => {
+  lastName.classList.add("error");
+  lastNameErrorMsg.style.display = "block";
+  const reglastName = /[a-z]/;
+  if (lastName.value.length >= 3 && reglastName.test(lastName.value)) {
+    lastName.classList.replace("error", "succes");
+    lastNameErrorMsg.style.display = "none";
+  }
+});
 
-//****************************************supression du panier*********** */
+const address = document.getElementById("address");
+address.addEventListener("change", (event) => {
+  event.preventDefault();
+  address.classList.add("error");
+  addressErrorMsg.style.display = "block";
+  const regAddress = /^[#.0-9a-zA-Z\s,-]+$/;
+  if (regAddress.test(address.value)) {
+    address.classList.replace("error", "succes");
+    addressErrorMsg.style.display = "none";
+  }
+});
+const city = document.getElementById("city");
+city.addEventListener("change", (event) => {
+  city.classList.add("error");
+  cityErrorMsg.style.display = "block";
+  const regCity =
+    /^[a-zA-Z\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
+  if (regCity.test(city.value)) {
+    city.classList.replace("error", "succes");
+    cityErrorMsg.style.display = "none";
+  }
+});
 
-let btnDelete = document.querySelectorAll(".deleteItem");
-// console.log(btnDelete);
-// btnDelete.addEventListener("click", (event) => {
-//   console.log("suprime le produit");
-// });
+const email = document.getElementById("email");
+email.addEventListener("change", (event) => {
+  email.classList.add("error");
+  emailErrorMsg.style.display = "block";
+  const regEmail =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (regEmail.test(email.value)) {
+    email.classList.replace("error", "succes");
+    emailErrorMsg.style.display = "none";
+  }
+});
 
-//****************************************End supression du panier*********** */
 
-//*******************gestion formulaire  ***************** */
-
-//********************lancer la commande ***************** */
-
-// order.addEventListener("click", (event) => {
-//   // updateTotal();
-// });
-
-// a revoir ******************************
-
-// for (let i = 0; i < prodStore.length; i++) {
-//   let image = document.querySelector("#cart__items");
-//   image.src = prodStore[i].image;
-//   image.alt = prodStore[i].alt;
-//   console.log(image.src);
-// prodLocal.push(prodStore[i]);
-// let src = prodStore.image;
-// console.log(src);
-// innerHTML = `;
-//               <img src="${prodStore.image}" alt="${prodStore.alt}">

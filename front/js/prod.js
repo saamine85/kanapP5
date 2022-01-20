@@ -19,7 +19,7 @@ const fetchProduit = async () => {
 const produitDisplay = async () => {
   await fetchProduit();
   let myImage = document.querySelector("article .item__img");
-  myImage.innerHTML=` 
+  myImage.innerHTML = ` 
               <img src="${produitData.imageUrl}" alt="${produitData.altTxt}"> 
     `;
   let myTitle = document.querySelector("#title");
@@ -27,7 +27,7 @@ const produitDisplay = async () => {
   let myPrice = document.querySelector("#price");
   myPrice.textContent = produitData.price;
   // console.log(typeof myPrice.toString());
-  // myButton.setAttribute("id", `${produitData._id}`);
+  // button.setAttribute("id", `${produitData._id}`);
   let myDescription = document.querySelector("#description");
   myDescription.textContent = produitData.description;
   let myColor = document.querySelector("select");
@@ -49,27 +49,27 @@ produitDisplay();
 
 // ************************************  ajouter au panier  ****************
 
-let idProd = document.querySelector("#colors");
-// console.log(idProd);
-let myButton = document.querySelector("#addToCart");
-// console.log(myButton);
-let myQuantity = document.querySelector("#quantity");
-// console.log(myQuantity);
+let color = document.querySelector("#colors");
+// console.log(color);
+let button = document.querySelector("#addToCart");
+// console.log(button);
+let quantity = document.querySelector("#quantity");
+// console.log(quantity);
 
-myButton.addEventListener("click", (event) => {
+button.addEventListener("click", (event) => {
   event.preventDefault();
-  let myQuantite = myQuantity.value;
-  // myQuantite = Number(myQuantite);
-  // console.log(myQuantite);
+  let myQuantity = quantity.value;
+  // myQuantity = Number(myQuantity);
+  // console.log(myQuantity);
 
-  let monChoix = idProd.value;
-  if ((monChoix == "" && myQuantite <= 100) || myQuantite == 0) {
+  let myColor = color.value;
+  if ((myColor == "" && myQuantity <= 100) || myQuantity == 0) {
     alert("ajout une couleur et une quantite");
   } else {
     let optionProd = {
-      id_Produit: produitData._id,
-      color: monChoix,
-      quantity: myQuantite,
+      productId: produitData._id,
+      color: myColor,
+      quantity: myQuantity,
     };
     // si le produit a une coleur vide rendre le prix egale a zero a revoir apres
 
@@ -82,9 +82,9 @@ myButton.addEventListener("click", (event) => {
     const panierconfimr = () => {
       if (
         window.confirm(
-          `${produitData.name} option:${monChoix} 
-        à bien été ajouter au panier, 
-        pour consulter le panier  OK 
+          `${produitData.name} option:${myColor}
+        à bien été ajouter au panier,
+        pour consulter le panier  OK
         ou revenir à l'acceuil ANNULER`
         )
       ) {
@@ -103,26 +103,70 @@ myButton.addEventListener("click", (event) => {
     // console.log(prodStore);
 
     // ajouter une liste pour ajouter les options choisis*********
+
     if (prodStore == null) {
       prodStore = [];
-      prodStore.push(optionProd);
-      localStorage.setItem("produit", JSON.stringify(prodStore));
       console.log(prodStore);
+      prodStore.push(optionProd);
+
+      // localStorage.setItem("produit", JSON.stringify(prodStore));
+      // console.log(optionProd.quantity);
+      //   let qnt = Number(optionProd.quantity);
+      // console.log(qnt);
+      // console.log(prodStore[0].quantity);
       panierconfimr();
     } else {
-      prodStore.push(optionProd);
-      localStorage.setItem("produit", JSON.stringify(prodStore));
-      console.log(prodStore);
+      for (let k = 0; k < prodStore.length; k++) {
+        // console.log(prodStore);
+        const article = prodStore[k];
+        if (
+          article.color === optionProd.color &&
+          optionProd.productId === produitData._id
+        ) {
+          console.log("same color and same ID");
+
+          let newQnt =
+            parseInt(prodStore[k].quantity) + parseInt(optionProd.quantity);
+          console.log(newQnt);
+          // prodStore.push(optionProd.newQnt);
+          // let myQuantity = toString(newQnt);
+          // console.log(myQuantity);
+          // console.log(newQnt);
+          // console.log(prodStore[k].quantity);
+        } else {
+          console.log("coleur differente ou diffrente ID");
+        }
+      }
       panierconfimr();
+      prodStore.push(optionProd);
     }
+    localStorage.setItem("produit", JSON.stringify(prodStore));
+    // else {
+    //   prodStore.push(optionProd);
+    //   localStorage.setItem("produit", JSON.stringify(prodStore));
+    //   console.log(prodStore);
+    //   // panierconfimr();
+    // }
 
     // if (condition) {
 
     // } else {
 
     // }
-    // console.log(monChoix);
-    // console.log(myQuantite);
+    // console.log(produitData.id === optionProd.productId);
+    // console.log(myColor === prodStore[0].color);
+    // console.log(optionProd.productId);
+    // console.log(prodStore[0].color);
+    // console.log(myColor);
+    // console.log(produitData._id);
+    // console.log(myQuantity);
+    // if (
+    //   optionProd.color == myColor &&
+    //   optionProd.productId == produitData._id
+    // ) {
+    //   console.log(optionProd.color);
+    //   console.log(myColor);
+    // }
   }
 });
 //''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''//
