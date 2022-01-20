@@ -98,8 +98,6 @@ button.addEventListener("click", (event) => {
 
     // rendre l'objet javascript une chaine de caractere cad format json stringfy et linverse en utilise parse
     let prodStore = JSON.parse(localStorage.getItem("produit"));
-    // let panierTotal = JSON.parse(localStorage.getItem("panier"));
-    // console.log(panierTotal);
     // console.log(prodStore);
 
     // ajouter une liste pour ajouter les options choisis*********
@@ -107,7 +105,9 @@ button.addEventListener("click", (event) => {
     if (prodStore == null) {
       prodStore = [];
       console.log(prodStore);
+      console.log("panier vide");
       prodStore.push(optionProd);
+      // prodStore.push(optionProd);
 
       // localStorage.setItem("produit", JSON.stringify(prodStore));
       // console.log(optionProd.quantity);
@@ -117,7 +117,7 @@ button.addEventListener("click", (event) => {
       panierconfimr();
     } else {
       for (let k = 0; k < prodStore.length; k++) {
-        // console.log(prodStore);
+        console.log(prodStore.length);
         const article = prodStore[k];
         if (
           article.color === optionProd.color &&
@@ -128,6 +128,7 @@ button.addEventListener("click", (event) => {
           let newQnt =
             parseInt(prodStore[k].quantity) + parseInt(optionProd.quantity);
           console.log(newQnt);
+          prodStore[k].quantity = newQnt;
           // prodStore.push(optionProd.newQnt);
           // let myQuantity = toString(newQnt);
           // console.log(myQuantity);
@@ -135,49 +136,12 @@ button.addEventListener("click", (event) => {
           // console.log(prodStore[k].quantity);
         } else {
           console.log("coleur differente ou diffrente ID");
+          prodStore.push(optionProd);
         }
       }
       panierconfimr();
-      prodStore.push(optionProd);
     }
     localStorage.setItem("produit", JSON.stringify(prodStore));
-    // else {
-    //   prodStore.push(optionProd);
-    //   localStorage.setItem("produit", JSON.stringify(prodStore));
-    //   console.log(prodStore);
-    //   // panierconfimr();
-    // }
-
-    // if (condition) {
-
-    // } else {
-
-    // }
-    // console.log(produitData.id === optionProd.productId);
-    // console.log(myColor === prodStore[0].color);
-    // console.log(optionProd.productId);
-    // console.log(prodStore[0].color);
-    // console.log(myColor);
-    // console.log(produitData._id);
-    // console.log(myQuantity);
-    // if (
-    //   optionProd.color == myColor &&
-    //   optionProd.productId == produitData._id
-    // ) {
-    //   console.log(optionProd.color);
-    //   console.log(myColor);
-    // }
   }
 });
 //''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''//
-
-// const updateProd = () => {
-//   const allQuantity = document.querySelectorAll("article");
-//   // allQuantity.forEach((item) => {
-//   //   console.log()
-//   // });
-//   for (let i = 0; i < allQuantity.length; i++) {
-//     allQuantity[i];
-//     console.log(allQuantity);
-//   }
-// };
