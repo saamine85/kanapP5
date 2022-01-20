@@ -232,4 +232,8 @@ email.addEventListener("change", (event) => {
   }
 });
 
-
+const orderBtn = document.querySelector("#order")
+orderBtn.addEventListener("click",(event) => {
+  event.preventDefault();
+  window.location.href = "confirmation.html";
+})
