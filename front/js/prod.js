@@ -49,15 +49,15 @@ produitDisplay();
 
 // ************************************  ajouter au panier  ****************
 
-let color = document.querySelector("#colors");
-// console.log(color);
+// console.log(quantity);
 let button = document.querySelector("#addToCart");
 // console.log(button);
-let quantity = document.querySelector("#quantity");
-// console.log(quantity);
 
 button.addEventListener("click", (event) => {
   event.preventDefault();
+  let color = document.querySelector("#colors");
+  // console.log(color);
+  let quantity = document.querySelector("#quantity");
   let myQuantity = quantity.value;
   // myQuantity = Number(myQuantity);
   // console.log(myQuantity);
@@ -107,41 +107,29 @@ button.addEventListener("click", (event) => {
       console.log(prodStore);
       console.log("panier vide");
       prodStore.push(optionProd);
-      // prodStore.push(optionProd);
 
-      // localStorage.setItem("produit", JSON.stringify(prodStore));
-      // console.log(optionProd.quantity);
-      //   let qnt = Number(optionProd.quantity);
-      // console.log(qnt);
-      // console.log(prodStore[0].quantity);
       panierconfimr();
     } else {
-      for (let k = 0; k < prodStore.length; k++) {
-        console.log(prodStore.length);
-        const article = prodStore[k];
-        if (
-          article.color === optionProd.color &&
-          optionProd.productId === produitData._id
-        ) {
-          console.log("same color and same ID");
-
-          let newQnt =
-            parseInt(prodStore[k].quantity) + parseInt(optionProd.quantity);
-          console.log(newQnt);
-          prodStore[k].quantity = newQnt;
-          // prodStore.push(optionProd.newQnt);
-          // let myQuantity = toString(newQnt);
-          // console.log(myQuantity);
-          // console.log(newQnt);
-          // console.log(prodStore[k].quantity);
-        } else {
-          console.log("coleur differente ou diffrente ID");
-          prodStore.push(optionProd);
-        }
+      const productIndex = prodStore.findIndex((item) => {
+        item.color === optionProd.color && item.id === optionProd.productId;
+      });
+      if (productIndex === -1) {
+        // console.log("false");
+        // prodStore.push(optionProd);
+        prodStore.push(optionProd);
+        // prodStore[productIndex].quantity = newQnt;
+      } else {
+        let newQnt =
+          parseInt(prodStore[productIndex].quantity) +
+          parseInt(optionProd.quantity);
+        console.log(newQnt);
+        // let newQnt =
+        //   parseInt(prodStore[productIndex].quantity) +
+        //   parseInt(optionProd.quantity);
       }
       panierconfimr();
     }
+    // prodStore.push(optionProd);
     localStorage.setItem("produit", JSON.stringify(prodStore));
   }
 });
-//''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''//
