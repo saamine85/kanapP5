@@ -1,82 +1,68 @@
-// const { orderProducts } = require("../../back/controllers/product");
-
-// const { orderProducts } = require("../../back/controllers/product");
-
-// let url = `./product.html?id=${products._id}`;
-// recuperation du l' íd du produit (second methode with urlsearchparam)
 const produit = window.location.search.slice(4);
 console.log(produit);
 let produitData = [];
+
+//************************************* get produit from API******************/
+
 const fetchProduit = async () => {
   await fetch(`http://localhost:3000/api/products/${produit}`)
     .then((res) => res.json())
     .then((data) => {
+      console.log(data);
       produitData = data;
-      // console.log(produitData);
     });
-  // console.log(res.json());
 };
+
+//************************************* display produit from API******************/
+
 const produitDisplay = async () => {
   await fetchProduit();
-  let myImage = document.querySelector("article .item__img");
-  myImage.innerHTML = ` 
-              <img src="${produitData.imageUrl}" alt="${produitData.altTxt}"> 
-    `;
-  let myTitle = document.querySelector("#title");
-  myTitle.textContent = produitData.name;
-  let myPrice = document.querySelector("#price");
-  myPrice.textContent = produitData.price;
-  // console.log(typeof myPrice.toString());
-  // button.setAttribute("id", `${produitData._id}`);
-  let myDescription = document.querySelector("#description");
-  myDescription.textContent = produitData.description;
+  let image = document.querySelector("article .item__img");
+  image.innerHTML = `
+  <img src="${produitData.imageUrl}" alt="${produitData.altTxt}"></img>`;
+  let title = document.querySelector("#title");
+  title.textContent = produitData.name;
+  let price = document.querySelector("#price");
+  price.textContent = produitData.price;
+  let description = document.querySelector("#description");
+  description.textContent = produitData.description;
+
+  /************************************* display color select input ******************/
+
   let myColor = document.querySelector("select");
-  // console.log(myColor.length);
-
-  // // selection du button ajouter au panier----------------
-
-  produitData.colors.forEach((color) => {
-    let myOption = document.createElement("option");
-    myOption.textContent = color;
-    myOption.setAttribute("value", `${color}`);
-    myOption.value = color;
-    myColor.append(myOption);
+  let colors = produitData.colors;
+  colors.forEach((color) => {
+    let option = document.createElement("option");
+    option.textContent = color;
+    option.setAttribute("value", `${color}`);
+    option.value = color;
+    myColor.append(option);
   });
 };
-
 produitDisplay();
-// console.log(produitDisplay);
 
-// ************************************  ajouter au panier  ****************
+//************************************* display produit from API******************/
 
-// console.log(quantity);
-let button = document.querySelector("#addToCart");
-// console.log(button);
+let btn = document.querySelector("#addToCart");
+console.log(btn);
 
-button.addEventListener("click", (event) => {
-  event.preventDefault();
+/******************************* get color and quantity from input after click ******************************/
+
+btn.addEventListener("click", (e) => {
+  e.preventDefault();
   let color = document.querySelector("#colors");
-  // console.log(color);
+  console.log(color);
   let quantity = document.querySelector("#quantity");
   let myQuantity = quantity.value;
-  // myQuantity = Number(myQuantity);
-  // console.log(myQuantity);
-
   let myColor = color.value;
-  if ((myColor == "" && myQuantity <= 100) || myQuantity == 0) {
-    alert("ajout une couleur et une quantite");
+  console.log(myColor);
+  console.log(myQuantity);
+  if (myColor == "" || myQuantity == 0) {
+    alert("veuillez choisir votre coleur et ajouter votre quantité ");
+  } else if (myQuantity > 100) {
+    alert("la quantité requise doit etre inférieur à 100");
   } else {
-    let optionProd = {
-      productId: produitData._id,
-      color: myColor,
-      quantity: myQuantity,
-    };
-    // si le produit a une coleur vide rendre le prix egale a zero a revoir apres
-
-    // si le produit a une coleur vide rendre le prix egale a zero a revoir apres
-    // console.log(optionProd);
-    // console.log(produitData.price);
-
+    /* popup confirmation ajout du produit  */
     //-------------------- popup confirmation panier----------
 
     const panierconfimr = () => {
@@ -93,43 +79,51 @@ button.addEventListener("click", (event) => {
         window.location.href = "index.html";
       }
     };
+    /************************************ add product to local storage *******************/
 
-    //------------------locale storage--------------------------------
+    let panier = JSON.parse(localStorage.getItem("produit"));
+    console.log(panier);
+    // key is produit ,and panier is an array
 
-    // rendre l'objet javascript une chaine de caractere cad format json stringfy et linverse en utilise parse
-    let prodStore = JSON.parse(localStorage.getItem("produit"));
-    // console.log(prodStore);
+    /************************************ Creat object with 3 parameters color-quantity and Id *******************/
+    let optionProd = {
+      id: produitData._id,
+      color: myColor,
+      quantity: myQuantity,
+    };
+    console.log(optionProd);
+    /************************************ add product to an array *******************/
 
-    // ajouter une liste pour ajouter les options choisis*********
-
-    if (prodStore == null) {
-      prodStore = [];
-      console.log(prodStore);
-      console.log("panier vide");
-      prodStore.push(optionProd);
-
+    if (panier == null) {
+      panier = [];
+      console.log(panier);
+      console.log(
+        "le panier était vide => le produit à était ajouté  dans le panier"
+      );
+      panier.push(optionProd);
       panierconfimr();
     } else {
-      const productIndex = prodStore.findIndex((item) => {
-        item.color === optionProd.color && item.id === optionProd.productId;
-      });
-      if (productIndex === -1) {
-        // console.log("false");
-        // prodStore.push(optionProd);
-        prodStore.push(optionProd);
-        // prodStore[productIndex].quantity = newQnt;
+      /************************************ check if panier array contains product with same color and id *******************/
+      const prodIndex = panier.findIndex(
+        (product) =>
+          product.color === optionProd.color && product.id === optionProd.id
+      );
+
+      if (prodIndex === -1) {
+        panier.push(optionProd);
+        console.log("produit différent => le produit ajouté  dans le panier");
       } else {
         let newQnt =
-          parseInt(prodStore[productIndex].quantity) +
-          parseInt(optionProd.quantity);
+          parseInt(panier[prodIndex].quantity) + parseInt(optionProd.quantity);
+        panier[prodIndex].quantity = newQnt;
         console.log(newQnt);
-        // let newQnt =
-        //   parseInt(prodStore[productIndex].quantity) +
-        //   parseInt(optionProd.quantity);
+        console.log(
+          "même produit (id et coleur) => le produit à été incrémenté"
+        );
       }
       panierconfimr();
     }
-    // prodStore.push(optionProd);
-    localStorage.setItem("produit", JSON.stringify(prodStore));
+
+    localStorage.setItem("produit", JSON.stringify(panier));
   }
 });

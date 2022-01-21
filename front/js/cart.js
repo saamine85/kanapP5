@@ -1,6 +1,6 @@
 //****************************get panier from localStorage*********************/
-let prodStores = JSON.parse(localStorage.getItem("produit"));
-// console.log(prodStores)
+let panier = JSON.parse(localStorage.getItem("produit"));
+// console.log(panier)
 
 //****************************select position of stores*********************/
 
@@ -9,12 +9,12 @@ let addPanier = document.querySelector("#cart__items");
 //**************************** if panier !==null *********************/
 
 let produitData = [];
-if (prodStores) {
+if (panier) {
   // console.log("add your code");
-  for (let i = 0; i < prodStores.length; i++) {
-    const prodStore = prodStores[i];
+  for (let i = 0; i < panier.length; i++) {
+    const prodStore = panier[i];
     /**************************** fetch Api **************************/
-    fetch(`http://localhost:3000/api/products/${prodStore.productId}`)
+    fetch(`http://localhost:3000/api/products/${prodStore.id}`)
       .then((res) => res.json())
       .then((data) => {
         produitData = data;
@@ -96,12 +96,12 @@ const removeProd = () => {
       itemClicked.closest("article").remove();
       console.log(itemColor);
       console.log(itemId);
-      prodStores = prodStores.filter(
-        (el) => el.productId !== itemId || el.color !== itemColor
+      panier = panier.filter(
+        (el) => el.id !== itemId || el.color !== itemColor
       );
 
-      localStorage.setItem("produit", JSON.stringify(prodStores));
-      if (prodStores.length === 0) {
+      localStorage.setItem("produit", JSON.stringify(panier));
+      if (panier.length === 0) {
         localStorage.removeItem("produit");
         location.reload();
       }
@@ -160,15 +160,12 @@ const updateQuantity = () => {
 
       //****************************** check element if they have same color and id in sotres
 
-      prodStores.forEach((prodStore) => {
-        if (
-          prodStore.productId == prodQtyId &&
-          prodStore.color == prodQtyColor
-        ) {
+      panier.forEach((prodStore) => {
+        if (prodStore.id == prodQtyId && prodStore.color == prodQtyColor) {
           prodStore.quantity = myQuantity;
         }
       });
-      localStorage.setItem("produit", JSON.stringify(prodStores));
+      localStorage.setItem("produit", JSON.stringify(panier));
       updateTotal();
     });
   });
@@ -232,8 +229,8 @@ email.addEventListener("change", (event) => {
   }
 });
 
-const orderBtn = document.querySelector("#order")
-orderBtn.addEventListener("click",(event) => {
+const orderBtn = document.querySelector("#order");
+orderBtn.addEventListener("click", (event) => {
   event.preventDefault();
   window.location.href = "confirmation.html";
-})
+});
