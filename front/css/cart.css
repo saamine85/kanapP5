@@ -94,7 +94,7 @@ h2 {
   margin-top: 90px;
 }
 .cart__order__form {
-  width: 50%;
+  width: 40%;
 }
 .cart__order__form__question {
   display: flex;
@@ -102,7 +102,7 @@ h2 {
   margin-bottom: 25px;
 }
 .cart__order__form__question input {
-  border-radius: 13px;
+  border-radius: 5px;
   border: 0;
   height: 26px;
   margin-top: 4px;
@@ -171,9 +171,14 @@ h2 {
   }
 }
 
-.error{
-	border :  2px solid #ff7272 !important;
+.error {
+  border: none;
+  background-color: #af2525;
+  color: white;
 }
-.succes{
-		border :  2px solid #2f9740 !important;
+.succes {
+  border: none;
+  /* border: 3px solid !important; */
+  background-color: #40aa52ee;
+  color: white;
 }

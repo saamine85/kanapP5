@@ -229,8 +229,116 @@ email.addEventListener("change", (event) => {
   }
 });
 
-const orderBtn = document.querySelector("#order");
-orderBtn.addEventListener("click", (event) => {
-  event.preventDefault();
-  window.location.href = "confirmation.html";
+//''''''''''''''''''''''''''''''''''''''''''reset form after loadpage''''''''''''''''''''''''''''''''''//
+const form = document.querySelector("form");
+// form.reset();
+//''''''''''''''''''''''''''''''''''''''''''Start Order event''''''''''''''''''''''''''''''''''//
+
+//''' get data from form and set it to local storage''''''//
+
+// const orderBtn = document.querySelector("#order");
+// console.log(orderBtn);
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault(); // prevent autosubmiting form
+  // contact();
+  // ''''''''''''''''''''''''set and get form as an object
+
+  //****  methode 1 repetition/
+
+  // const formulaire = {
+  //   prenom: localStorage.getItem("prenom"),
+  //   nom: localStorage.getItem("nom"),
+  //   adress: localStorage.getItem("adresse"),
+  //   city: localStorage.getItem("ville"),
+  //   email: localStorage.getItem("email"),
+  // };
+  // console.log(formulaire);
+
+  // localStorage.setItem("prenom", document.querySelector("#firstName").value);
+  // localStorage.setItem("nom", document.querySelector("#lastName").value);
+  // localStorage.setItem("adresse", document.querySelector("#address").value);
+  // localStorage.setItem("ville", document.querySelector("#city").value);
+  // localStorage.setItem("email", document.querySelector("#email").value);
+  // console.log(document.querySelector("#firstName").value);
+  // console.log(document.querySelector("#lastName").value);
+  // console.log(document.querySelector("#address").value);
+  // console.log(document.querySelector("#city").value);
+  // console.log(document.querySelector("#email").value);
+
+  //***''''''''methode 2/
+
+  // const formulaire = {
+  //   prenom: document.querySelector("#firstName").value,
+  //   nom: document.querySelector("#lastName").value,
+  //   adress: document.querySelector("#address").value,
+  //   ville: document.querySelector("#city").value,
+  //   email: document.querySelector("#email").value,
+  // };
+  // console.log(formulaire);
+
+  //***''''''''methode 3/
+  class form {
+    constructor() {
+      this.prenom = document.querySelector("#firstName").value;
+      this.nom = document.querySelector("#lastName").value;
+      this.adress = document.querySelector("#address").value;
+      this.ville = document.querySelector("#city").value;
+      this.email = document.querySelector("#email").value;
+    }
+  }
+  //************** avoid instance to create a form obeject'''''''''/
+  const formulaire = new form();
+  // console.log(formulaire);
+  //******************'''''' set form values in local storage''''''''/
+
+  // control valid form
+  localStorage.setItem("form", JSON.stringify(formulaire));
+  // if (contact) {
+  // }
+  console.log(localStorage.getItem("form"));
+  const order = {
+    panier,
+    formulaire,
+  };
+  console.log("object a envoyer vers le serveur", order);
+
+  //******************'''''' send object to server''''''''/
+  sendToServer();
 });
+
+//********************* keep local storage form values at the form input when change page//
+
+const dataStorage = localStorage.getItem("form");
+// console.log(dataStorage);
+const dataForm = JSON.parse(dataStorage);
+
+//** method 1*/
+
+console.log("mes infos formulaires", dataForm);
+const lsForm = () => {
+  if (dataForm) {
+    document.querySelector("#firstName").value = dataForm.prenom;
+    document.querySelector("#lastName").value = dataForm.nom;
+    document.querySelector("#address").value = dataForm.adress;
+    document.querySelector("#city").value = dataForm.ville;
+    document.querySelector("#email").value = dataForm.email;
+  }
+};
+lsForm();
+
+const sendToServer = () => {
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify(order),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  // .then((res) => res.json())
+  // .then((data) => {
+  //   // window.location = "confirmation.html?id=" + content.orderId;
+  //   console.log(data);
+  // });
+  // console.log("donnees envoyees:", data);
+};
