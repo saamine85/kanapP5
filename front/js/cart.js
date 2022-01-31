@@ -186,7 +186,8 @@ const firstName = document.getElementById("firstName");
 firstName.addEventListener("change", (event) => {
   firstName.classList.add("error");
   firstNameErrorMsg.style.display = "block";
-  const regFirstName = /[a-z]/;
+  const regFirstName = /[a-zÀ-ÿ]/;
+  // /^[A-Za-zÀ-ÿ ,.'-]{3,20}$/;
   if (firstName.value.length >= 3 && regFirstName.test(firstName.value)) {
     firstName.classList.replace("error", "succes");
     firstNameErrorMsg.style.display = "none";
@@ -197,7 +198,8 @@ const lastName = document.getElementById("lastName");
 lastName.addEventListener("change", (event) => {
   lastName.classList.add("error");
   lastNameErrorMsg.style.display = "block";
-  const reglastName = /[a-z]/;
+  const reglastName = /[a-zÀ-ÿ]/;
+  // /^[A-Za-zÀ-ÿ ,.'-]{3,20}$/;
   if (lastName.value.length >= 3 && reglastName.test(lastName.value)) {
     lastName.classList.replace("error", "succes");
     lastNameErrorMsg.style.display = "none";
@@ -211,8 +213,9 @@ address.addEventListener("change", (event) => {
   address.classList.add("error");
   addressErrorMsg.style.display = "block";
   const regAddress =
-    /^[0-9a-zA-Z\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
-  if (regAddress.test(address.value)) {
+    /^[0-9a-zA-ZÀ-ÿ\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-ZÀ-ÿ\u0080-\u024F]+(?:. |-| |'))*[a-zA-ZÀ-ÿ\u0080-\u024F]*$/;
+  // /^([a-zA-ZÀ-ÿ,-. ]{1,}|[0-9]{1,4})[ ].{1,}$/;
+    if (regAddress.test(address.value)) {
     address.classList.replace("error", "succes");
     addressErrorMsg.style.display = "none";
     adressValidator = true;
@@ -224,7 +227,8 @@ city.addEventListener("change", (event) => {
   cityErrorMsg.style.display = "block";
   const regCity =
     /^[a-zA-Z\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
-  if (regCity.test(city.value)) {
+//  /^[A-Za-zÀ-ÿ ,.'-]{3,20}$/;
+    if (regCity.test(city.value)) {
     city.classList.replace("error", "succes");
     cityErrorMsg.style.display = "none";
     cityValidator = true;
@@ -237,6 +241,7 @@ email.addEventListener("change", (event) => {
   emailErrorMsg.style.display = "block";
   const regEmail =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  // /^[a-zA-Z0-9.-_]+@{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/.
   if (regEmail.test(email.value)) {
     email.classList.replace("error", "succes");
     emailErrorMsg.style.display = "none";
@@ -262,6 +267,8 @@ form.addEventListener("submit", (event) => {
       city: city.value,
       email: email.value,
     };
+    localStorage.setItem("contact", JSON.stringify(contact));
+
     let products = [];
     panier.forEach((el) => {
       products.push(el.id);
@@ -281,8 +288,8 @@ form.addEventListener("submit", (event) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data.orderId);
-        // localStorage.clear();
-        window.location.href = `confirmation.html?orderId=${data.orderI}`;
+        localStorage.clear();
+        window.location.href = `confirmation.html?orderId=${data.orderId}`;
       })
       .catch((err) => console.log("Erreur est survenu", err));
   }
