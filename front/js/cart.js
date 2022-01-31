@@ -215,7 +215,7 @@ address.addEventListener("change", (event) => {
   const regAddress =
     /^[0-9a-zA-ZÀ-ÿ\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-ZÀ-ÿ\u0080-\u024F]+(?:. |-| |'))*[a-zA-ZÀ-ÿ\u0080-\u024F]*$/;
   // /^([a-zA-ZÀ-ÿ,-. ]{1,}|[0-9]{1,4})[ ].{1,}$/;
-    if (regAddress.test(address.value)) {
+  if (regAddress.test(address.value)) {
     address.classList.replace("error", "succes");
     addressErrorMsg.style.display = "none";
     adressValidator = true;
@@ -226,9 +226,9 @@ city.addEventListener("change", (event) => {
   city.classList.add("error");
   cityErrorMsg.style.display = "block";
   const regCity =
-    /^[a-zA-Z\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
-//  /^[A-Za-zÀ-ÿ ,.'-]{3,20}$/;
-    if (regCity.test(city.value)) {
+    /^[a-zA-ZÀ-ÿ\u0080-\u024F]+(?:. |-| |')*([1-9a-zA-ZÀ-ÿ\u0080-\u024F]+(?:. |-| |'))*[a-zA-ZÀ-ÿ\u0080-\u024F]*$/;
+  //  /^[A-Za-zÀ-ÿ ,.'-]{3,20}$/;
+  if (regCity.test(city.value)) {
     city.classList.replace("error", "succes");
     cityErrorMsg.style.display = "none";
     cityValidator = true;
@@ -267,7 +267,7 @@ form.addEventListener("submit", (event) => {
       city: city.value,
       email: email.value,
     };
-    localStorage.setItem("contact", JSON.stringify(contact));
+    // localStorage.setItem("contact", JSON.stringify(contact));
 
     let products = [];
     panier.forEach((el) => {
