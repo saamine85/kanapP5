@@ -193,7 +193,7 @@ firstName.addEventListener("change", (event) => {
     firstNameErrorMsg.style.display = "none";
     firstNameValidator = true;
   }
-});
+})
 const lastName = document.getElementById("lastName");
 lastName.addEventListener("change", (event) => {
   lastName.classList.add("error");
